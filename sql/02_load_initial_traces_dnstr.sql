@@ -1,3 +1,5 @@
+-- first, load downstream segments
+
 INSERT INTO temp.fishdistrib_events_temp
  (blue_line_key,
   linear_feature_id,
@@ -5,7 +7,6 @@ INSERT INTO temp.fishdistrib_events_temp
   upstream_route_measure,
   species_codes)
 
- -- first, load downstream segments
 SELECT DISTINCT * FROM
 (
   SELECT
@@ -13,7 +14,7 @@ SELECT DISTINCT * FROM
     b.linear_feature_id,
     round(b.downstream_route_measure::numeric, 3) as downstream_route_measure,
     round(b.upstream_route_measure::numeric, 3) as upstream_route_measure,
-    string_to_array(:species, ' ') AS species_codes
+    ARRAY[%s] AS species_codes
   FROM whse_fish.fiss_fish_obsrvtn_events a
   INNER JOIN whse_basemapping.fwa_stream_networks_sp b
   ON b.linear_feature_id != a.linear_feature_id AND
@@ -39,9 +40,8 @@ SELECT DISTINCT * FROM
                    )
           )
       )
-  WHERE a.maximal_species @> string_to_array(:species, ' ')
+  WHERE a.maximal_species @> ARRAY[%s]
 ) as obs
 ON CONFLICT (blue_line_key, downstream_route_measure, upstream_route_measure)
-DO UPDATE SET species_codes = fishdistrib_events_temp.species_codes||string_to_array(:species, ' ');
-
+DO UPDATE SET species_codes = fishdistrib_events_temp.species_codes||ARRAY[%s];
 
