@@ -32,7 +32,7 @@ sql = """
              geom
            FROM temp.fishdistrib
           """
-db.pg2ogr(sql, 'ESRI Shapefile', 'output/fishtraces_all.shp')
+db.pg2ogr(sql, 'ESRI Shapefile', 'fishtraces_all.shp')
 for species in species_list:
     sql = """
            SELECT
@@ -44,7 +44,7 @@ for species in species_list:
            GROUP BY blue_line_key, species
           """.format(species, species)
     print(sql)
-    db.pg2ogr(sql, 'ESRI Shapefile', 'output/fishtraces_{}.shp'.format(species))
+    db.pg2ogr(sql, 'ESRI Shapefile', 'fishtraces_{}.shp'.format(species))
 
 
 # dump observation events to file as well
@@ -64,4 +64,4 @@ sql = """SELECT fish_observation_point_id,
         source                   ,
         source_ref
         FROM whse_fish.fiss_fish_obsrvtn_events_vw"""
-db.pg2ogr(sql, 'ESRI Shapefile', 'output/observation_events.shp')
+db.pg2ogr(sql, 'ESRI Shapefile', 'observation_events.shp')
