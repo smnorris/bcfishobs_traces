@@ -11,8 +11,8 @@ Create traces of BC Fish Observation events downstream from observation point to
 ## Usage
 Run `bcfishobs` to download observations and reference the points to streams.  
 
-With that complete, create downstream traces and dump to shapefile:
+With that complete, modify the species list in `bcfishobs_traces.py` as required then run to create downstream traces and dump to shapefile. 
 
 ```
-python process.py
+python bcfishobs_traces.py
 ```

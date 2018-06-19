@@ -1,4 +1,6 @@
--- next, load segment on which event lies
+-- next, load the segment on which event lies, splitting the segment by using
+-- the observation's measure
+
 INSERT INTO temp.fishdistrib_events_temp
  (blue_line_key,
   linear_feature_id,

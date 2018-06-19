@@ -5,6 +5,9 @@ species_list = ['ACT', 'BT', 'CH', 'CM', 'CO', 'CT', 'DV', 'GSG', 'NDC', 'PK', '
 
 db = fwa.util.connect()
 
+# ensure schema exists
+db.execute('CREATE SCHEMA IF NOT EXISTS temp')
+
 # create output tables
 db.execute(db.queries['01_create_trace_table'])
 
@@ -20,7 +23,7 @@ for species in species_list:
 
 # with initial traces done, aggregate the results to create event table
 print('loading events')
-db.execute(db.queries['04_load_events_test'])
+db.execute(db.queries['04_load_events'])
 print('loading geometries')
 db.execute(db.queries['05_load_geoms'])
 

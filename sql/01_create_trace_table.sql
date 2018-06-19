@@ -17,9 +17,3 @@ UNIQUE (blue_line_key, downstream_route_measure, upstream_route_measure);
 
 CREATE INDEX ON temp.fishdistrib_events_temp (blue_line_key);
 CREATE INDEX ON temp.fishdistrib_events_temp (linear_feature_id);
-
-
-
-
-
-

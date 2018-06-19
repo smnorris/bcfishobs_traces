@@ -1,4 +1,4 @@
--- first, load downstream segments
+-- first, load all downstream segments
 
 INSERT INTO temp.fishdistrib_events_temp
  (blue_line_key,
