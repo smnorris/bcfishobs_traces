@@ -34,8 +34,10 @@ sql = """
              'ALL SPECIES' as species,
              geom
            FROM temp.fishdistrib
+           GROUP BY blue_line_key, species
           """
 db.pg2ogr(sql, 'ESRI Shapefile', 'fishtraces_all.shp')
+
 for species in species_list:
     sql = """
            SELECT
