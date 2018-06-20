@@ -5,8 +5,17 @@ species_list = ['ACT', 'BT', 'CH', 'CM', 'CO', 'CT', 'DV', 'GSG', 'NDC', 'PK', '
 
 db = fwa.util.connect()
 
+
 # ensure schema exists
 db.execute('CREATE SCHEMA IF NOT EXISTS temp')
+
+# remove invalid SSU events
+db.execute("""
+    UPDATE whse_fish.fiss_fish_obsrvtn_events
+    SET species_codes = array_remove(species_codes, 'SSU'),
+        maximal_species = array_remove(maximal_species, 'SSU')
+    WHERE blue_line_key IN (356320407, 359567031)
+    """)
 
 # create output tables
 db.execute(db.queries['01_create_trace_table'])
@@ -14,6 +23,7 @@ db.execute(db.queries['01_create_trace_table'])
 # load trace query and process each species separately
 q_a = db.queries['02_load_initial_traces_dnstr']
 q_b = db.queries['03_load_initial_traces_segment']
+
 for species in species_list:
     print(species+' - query a')
     db.execute(q_a, (species, species, species))
@@ -36,6 +46,7 @@ sql = """
            FROM temp.fishdistrib
            GROUP BY blue_line_key, species
           """
+print('Dumping all species to file: '+species)
 db.pg2ogr(sql, 'ESRI Shapefile', 'fishtraces_all.shp')
 
 for species in species_list:
@@ -48,12 +59,14 @@ for species in species_list:
            WHERE species_codes @> ARRAY['{}']
            GROUP BY blue_line_key, species
           """.format(species, species)
-    print(sql)
+    print('Dumping species to file: '+species)
     db.pg2ogr(sql, 'ESRI Shapefile', 'fishtraces_{}.shp'.format(species))
 
 
 # dump observation events to file as well
-sql = """SELECT fish_observation_point_id,
+sql = """
+     SELECT
+        fish_observation_point_id,
         linear_feature_id        ,
         blue_line_key            ,
         waterbody_key            ,
@@ -68,5 +81,6 @@ sql = """SELECT fish_observation_point_id,
         agency_name              ,
         source                   ,
         source_ref
-        FROM whse_fish.fiss_fish_obsrvtn_events_vw"""
+    FROM whse_fish.fiss_fish_obsrvtn_events_vw
+    """
 db.pg2ogr(sql, 'ESRI Shapefile', 'observation_events.shp')
